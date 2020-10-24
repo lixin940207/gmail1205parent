@@ -27,7 +27,7 @@ public class LoggerController {
         logger.info(jsonObject.toJSONString());
 
         //发送kafka
-        if("startup".equals(jsonObject.getString("type")) ){
+        if("startup".equals(jsonObject.getString("logType")) ){
             kafkaTemplate.send(GmallConstant.KAFKA_TOPIC_STARTUP,jsonObject.toJSONString());
         }else{
             kafkaTemplate.send(GmallConstant.KAFKA_TOPIC_EVENT,jsonObject.toJSONString());
