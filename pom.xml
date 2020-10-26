@@ -20,6 +20,7 @@
         <module>gmall1205-realtime</module>
         <module>gmall1205-publisher</module>
         <module>dw-chart</module>
+        <module>gmall1205-canal</module>
     </modules>
 
     <properties>
@@ -114,7 +115,7 @@
 
             <dependency>
                 <groupId>org.apache.spark</groupId>
-                <artifactId>spark-streaming-kafka-0-10_2.11</artifactId>
+                <artifactId>spark-streaming-kafka-0-8_2.11</artifactId>
                 <version>${spark.version}</version>
             </dependency>
         </dependencies>

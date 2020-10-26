@@ -21,6 +21,10 @@ object PropertiesUtil {
     prop
   }
 
+  def getProperty(propertyName:String): String ={
+    PropertiesUtil.load("config.properties").getProperty(propertyName)
+  }
+
 
 }
 
