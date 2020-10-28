@@ -5,7 +5,7 @@ import java.util
 import com.alibaba.fastjson.JSON
 import com.atguigu.gmall1205.common.constant.GmallConstant
 import com.atguigu.gmall1205.realtime.bean.{AlertInfo, EventLog}
-import com.atguigu.gmall1205.realtime.util.MyKafkaUtil
+import com.atguigu.gmall1205.realtime.util.{EsUtil, MyKafkaUtil}
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.{Minutes, Seconds, StreamingContext}
@@ -59,6 +59,17 @@ object AlertApp {
         }
         // 5. 过滤掉不需要报警的信息
         val filteredDStream: DStream[AlertInfo] = checkCouponAlertDStream.filter(_._1).map(_._2)
+
+        //写入ES
+        filteredDStream.foreachRDD(rdd => {
+            rdd.foreachPartition(alertInfoIt =>{
+                val result = alertInfoIt.map(info => {
+                    (info.mid + "_" + info.ts /1000 /60, info)
+                })
+                EsUtil.insertBulk("gmall_coupon_alert", Iterable(result))
+            })
+        }
+        )
 
 
         ssc.start()
