@@ -1,46 +1,47 @@
 package com.atguigu.gmall1205.publisher.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class SaleDetailInfo {
 
-    Integer total;
+    Long total;
     // 饼图集合
-    List<OptionGroup>  stat;
+    List<Stat>  stats = new ArrayList<>();
 
     //明细
-    List<Map> detail;
+    List<Map<String, Object>> detail;
 
-    public SaleDetailInfo(Integer total, List<OptionGroup> stat, List<Map> detail) {
-        this.total = total;
-        this.stat = stat;
-        this.detail = detail;
+    public SaleDetailInfo() {
+
     }
 
-
-
-    public Integer getTotal() {
+    public Long getTotal() {
         return total;
     }
 
-    public void setTotal(Integer total) {
+    public void setTotal(Long total) {
         this.total = total;
     }
 
-    public List<OptionGroup> getStat() {
-        return stat;
+    public List<Stat> getStats() {
+        return stats;
     }
 
-    public void setStat(List<OptionGroup> stat) {
-        this.stat = stat;
+    public void setStats(List<Stat> stats) {
+        this.stats = stats;
     }
 
-    public List<Map> getDetail() {
+    public void addStat(Stat stat){
+        this.stats.add(stat);
+    }
+
+    public List<Map<String, Object>> getDetail() {
         return detail;
     }
 
-    public void setDetail(List<Map> detail) {
+    public void setDetail(List<Map<String, Object>> detail) {
         this.detail = detail;
     }
 }

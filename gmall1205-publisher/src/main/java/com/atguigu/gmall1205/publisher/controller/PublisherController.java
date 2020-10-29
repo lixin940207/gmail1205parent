@@ -1,11 +1,16 @@
 package com.atguigu.gmall1205.publisher.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.atguigu.gmall1205.publisher.bean.Option;
+import com.atguigu.gmall1205.publisher.bean.SaleDetailInfo;
+import com.atguigu.gmall1205.publisher.bean.Stat;
 import com.atguigu.gmall1205.publisher.service.PublisherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -62,6 +67,70 @@ public class PublisherController {
             return JSON.toJSONString(hourMap);
         }
         return null;
+    }
+
+
+    /*
+接口: http://localhost:8070/sale_detail?date=2019-05-20&&startpage=1&&size=5&&keyword=手机小米
+
+ */
+    @GetMapping("/sale_detail")
+    public String saleDetail(@RequestParam("date") String date,
+                   @RequestParam("startpage") int page,
+                   @RequestParam("size") int pageSize,
+                   @RequestParam("keyword") String keyword) throws IOException {
+        Map<String, Object> resultAge = publisherService.getSaleDetailAndAggregationByField(date, keyword, "user_age", 100, page, pageSize);
+        Map<String, Object> resultGender = publisherService.getSaleDetailAndAggregationByField(date, keyword, "user_gender", 2, page, pageSize);
+
+        SaleDetailInfo saleDetailInfo = new SaleDetailInfo();
+        Long total = (Long) resultAge.get("total");
+        saleDetailInfo.setTotal(total);
+
+        List<Map<String, Object>> detail = (List<Map<String, Object>>) resultAge.get("detail");
+        saleDetailInfo.setDetail(detail);
+
+        Stat genderStat = new Stat();
+        genderStat.setTitle("用户性别占比");
+        Map<String, Long> genderAgg = (Map<String, Long>)resultGender.get("agg");
+        Set<Map.Entry<String, Long>> genderEntries = genderAgg.entrySet();
+        for (Map.Entry<String, Long> genderEntry : genderEntries) {
+            Option option = new Option();
+            option.setName(genderEntry.getKey().replace("F", "女").replace("M", "男"));
+            option.setValue(Double.valueOf(genderEntry.getValue()));
+            genderStat.addOption(option);
+        }
+        saleDetailInfo.addStat(genderStat);
+
+        //年龄的饼图
+        Stat ageStat = new Stat();
+
+        Map<String, Long> ageAgg = (Map<String, Long>) resultAge.get("agg");
+        Set<Map.Entry<String, Long>> entries = ageAgg.entrySet();
+
+        ageStat.addOption(new Option("20岁以下", 0.0));
+        ageStat.addOption(new Option("20岁到30岁", 0.0));
+        ageStat.addOption(new Option("30岁以上", 0.0));
+
+        for (Map.Entry<String, Long> entry : entries) {
+            int age = Integer.parseInt(entry.getKey());
+            Long value = entry.getValue();
+            if (age < 20){
+                Option o0 = ageStat.getOptions().get(0);
+                o0.setValue(o0.getValue() + value);
+            } else if (age < 30){
+                Option o1 = ageStat.getOptions().get(1);
+                o1.setValue(o1.getValue() + value);
+            } else{
+                Option o2 = ageStat.getOptions().get(2);
+                o2.setValue(o2.getValue() + value);
+            }
+        }
+
+        saleDetailInfo.addStat(ageStat);
+
+        return JSON.toJSONString(saleDetailInfo);
+
+
     }
 
 

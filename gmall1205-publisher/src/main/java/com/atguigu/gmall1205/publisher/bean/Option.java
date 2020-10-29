@@ -7,7 +7,10 @@ public class Option {
     Double value;
 
 
-    public Option(String name, Double value) {
+    public Option() {
+
+    }
+    public Option(String name, Double value){
         this.name = name;
         this.value = value;
     }
