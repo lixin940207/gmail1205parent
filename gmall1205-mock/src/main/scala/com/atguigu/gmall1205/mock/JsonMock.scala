@@ -60,8 +60,8 @@ object JsonMock {
     `area` string COMMENT '城市'
     `channel` string COMMENT '渠道'
      */
-    val mid: String = "mid_" + RandomNumUtil.randomInt(1, 10)
-    val uid: String = "" + RandomNumUtil.randomInt(1, 100)
+    val mid: String = "mid_" + RandomNumUtil.randomInt(1, 100)
+    val uid: String = "" + RandomNumUtil.randomInt(1, 10000)
     val os: String = osOpts.getRandomOption()
     val appId: String = this.appId
     val area: String = areaOpts.getRandomOption()
